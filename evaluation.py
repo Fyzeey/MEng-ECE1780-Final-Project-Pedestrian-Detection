@@ -3,9 +3,9 @@ from dataset import MnistDataset
 from scipy.misc import imread
 import numpy as np
 
-with tf.Session() as sess:
-    saver = tf.train.import_meta_graph('saved_models/model.ckpt.meta')      # Don't have to recreate the entire graph
-    saver.restore(sess, 'saved_models/model.ckpt')                          # Restore all graph variables
+with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)) as sess:
+    saver = tf.train.import_meta_graph('saved_models/pedestrian_model.ckpt.meta')      # Don't have to recreate the entire graph
+    saver.restore(sess, 'saved_models/pedestrian_model.ckpt')                          # Restore all graph variables
 
     model = tf.get_collection('model')[0]
     inputs = tf.get_collection('model_inputs')[0]
@@ -30,3 +30,4 @@ with tf.Session() as sess:
     print(sess.run(acc))
     #print (predictions)
     #print(np.argmax(predictions, 1))
+
