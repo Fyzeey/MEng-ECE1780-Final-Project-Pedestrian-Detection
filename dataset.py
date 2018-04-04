@@ -65,7 +65,7 @@ class MnistDataset:
         image = Image.open(image_path)              # Image object
         if image.mode != "RGB":
             image = image.convert('RGB')
-        image = image.resize((64,64),Image.ANTIALIAS)
+        image = image.resize((128,128),Image.ANTIALIAS)
         image = np.array(image)                     # Multi-dimentional array
         image = image.astype(np.float32)            # uint to float
         image = image / 255                         # 0-255 -> 0-1
