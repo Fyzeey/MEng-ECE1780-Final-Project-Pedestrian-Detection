@@ -4,8 +4,8 @@ from models.convolutional_model import ConvModel
 from dataset import MnistDataset
 
 
-epochs = 40
-batch_size = 40
+epochs = 50
+batch_size = 150
 
 # Load Data from target directory
 train_set = MnistDataset('kaggle_inria/train')
@@ -13,27 +13,28 @@ n_batches = len(train_set) // batch_size
 
 # hold_prob = tf.placeholder(tf.float32)
 
-# Construct CNN model
-# model = ConvModel(resolution=[64, 64], channels=3, hold_prob=hold_prob)
-model = ConvModel(resolution=[64, 64], channels=3)
+with tf.device('/gpu:1'):
+    # Construct CNN model
+    # model = ConvModel(resolution=[64, 64], channels=3, hold_prob=hold_prob)
+    model = ConvModel(resolution=[128, 128], channels=3)
 
-# We use this to save the model. Instantiate it after all Variables have been created
-saver = tf.train.Saver()
+    # We use this to save the model. Instantiate it after all Variables have been created
+    saver = tf.train.Saver()
 
-# Define tensors
-label_placeholder = tf.placeholder(tf.float32, shape=[batch_size, 2])
+    # Define tensors
+    label_placeholder = tf.placeholder(tf.float32, shape=[batch_size, 2])
 
-# Define loss functions and Optimizer
-loss = tf.losses.softmax_cross_entropy(label_placeholder, model.predictions)
-update = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(loss)
+    # Define loss functions and Optimizer
+    loss = tf.losses.softmax_cross_entropy(label_placeholder, model.predictions)
+    update = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(loss)
 
-top_predictions = tf.argmax(model.predictions, axis=1)      # probabilities -> top prediction
-top_labels = tf.argmax(label_placeholder, axis=1)           # one_hot -> number
-correct = tf.equal(top_predictions, top_labels)             # bool Tensor
-accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))     # Average correct guesses
+    top_predictions = tf.argmax(model.predictions, axis=1)      # probabilities -> top prediction
+    top_labels = tf.argmax(label_placeholder, axis=1)           # one_hot -> number
+    correct = tf.equal(top_predictions, top_labels)             # bool Tensor
+    accuracy = tf.reduce_mean(tf.cast(correct, tf.float32))     # Average correct guesses
 
 # TF Session
-with tf.Session() as sess:
+with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)) as sess:
     sess.run(tf.global_variables_initializer())
 
     test_inputs = []
